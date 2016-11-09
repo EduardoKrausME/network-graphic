@@ -8,15 +8,24 @@
 class Banda
 {
 
-    private $bandaAnterior = -1;
-    private $graficoData   = array();
+    private $bandaAnteriorIn  = -1;
+    private $bandaAnteriorOut = -1;
+    private $graficoDataIn    = array();
+    private $graficoDataOut   = array();
 
     /**
      * @return array
      */
-    public function getGraficoData ()
+    public function getGraficoDataIn ()
     {
-        return $this->graficoData;
+        return $this->graficoDataIn;
+    }
+    /**
+     * @return array
+     */
+    public function getGraficoDataOut ()
+    {
+        return $this->graficoDataOut;
     }
 
     function __construct ()
@@ -31,7 +40,7 @@ class Banda
             $file  = __DIR__ . '/networksaved/' . $date . '.txt';
             $banda = $this->getBandaByMinute ( $file );
 
-            if ( $banda > 0 ) {
+            if ( $banda !== 0 ) {
                 preg_match ( "/(\d+)\/(\d+)\/(\d+)\/(\d+)-(\d+)/", $date, $date_array );
 
                 $year   = $date_array[ 1 ];
@@ -40,7 +49,8 @@ class Banda
                 $hour   = $date_array[ 4 ];
                 $minute = $date_array[ 5 ];
 
-                $this->graficoData[] = "    [Date.UTC($year, $month, $day, $hour, $minute), $banda]";
+                $this->graficoDataIn[]  = "    [Date.UTC($year, $month, $day, $hour, $minute), {$banda['out']}]";
+                $this->graficoDataOut[] = "    [Date.UTC($year, $month, $day, $hour, $minute), {$banda['in']}]";
             }
         }
     }
@@ -53,22 +63,30 @@ class Banda
         $fileData = file_get_contents ( $file );
         preg_match_all ( "/\s*([a-z0-9]+):\s*([0-9]+)\s*([0-9]+)\s*([0-9]+)\s*([0-9]+)\s*([0-9]+)\s*([0-9]+)\s*([0-9]+)\s*([0-9]+)\s*([0-9]+)/", $fileData, $outputNet );
 
-        $somaRedeOutStart = 0;
+        $somaRedeStartIn = $somaRedeStartOut = 0;
+        foreach ( $outputNet[ 2 ] as $rede )
+            $somaRedeStartIn += $rede;
         foreach ( $outputNet[ 10 ] as $rede )
-            $somaRedeOutStart += $rede;
+            $somaRedeStartOut += $rede;
 
-        if ( $this->bandaAnterior == -1 ) {
-            $this->bandaAnterior = $somaRedeOutStart;
+        if ( $this->bandaAnteriorIn == -1 ) {
+            $this->bandaAnteriorIn  = $somaRedeStartIn;
+            $this->bandaAnteriorOut = $somaRedeStartOut;
 
             return 0;
         }
 
-        $retorno = $somaRedeOutStart - $this->bandaAnterior;
+        $retornoIn  = $somaRedeStartIn  - $this->bandaAnteriorIn;
+        $retornoOut = $somaRedeStartOut - $this->bandaAnteriorOut;
 
-        $this->bandaAnterior = $somaRedeOutStart;
+        $this->bandaAnteriorIn  = $somaRedeStartIn;
+        $this->bandaAnteriorOut = $somaRedeStartOut;
 
         // 60 minitos e banda é em segundos
-        return $retorno / 60;
+        return array(
+            'in'  => $retornoIn / 60,
+            'out' => $retornoOut / 60
+        );
     }
 
 }

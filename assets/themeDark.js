@@ -1,14 +1,14 @@
 Highcharts.setOptions({
     global: {
-        useUTC:            true
+        useUTC: true
     },
     lang: {
-        loading:           'Aguarde...',
-        weekdays:          ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
-        months:            ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-        shortMonths:       ['Jan', 'Feb', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-        decimalPoint:      ',',
-        thousandsSep:      '.'
+        loading: 'Aguarde...',
+        weekdays: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+        months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+        shortMonths: ['Jan', 'Feb', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+        decimalPoint: ',',
+        thousandsSep: '.'
     },
     credits: {
         enabled: false
@@ -16,13 +16,13 @@ Highcharts.setOptions({
     tooltip: {
         dateTimeLabelFormats: {
             millisecond: '%A, %e de %b de %Y as %H:%M:%S.%L',
-            second:      '%A, %e de %b de %Y as %H:%M:%S',
-            minute:      '%A, %e de %b de %Y as %H:%M',
-            hour:        '%A, %e de %b de %Y as %H:%M',
-            day:         '%A, %e de %b de %Y as %H:%M',
-            week:        'Week from %A, %e de %b de %Y',
-            month:       '%B %Y',
-            year:        '%Y'
+            second: '%A, %e de %b de %Y as %H:%M:%S',
+            minute: '%A, %e de %b de %Y as %H:%M',
+            hour: '%A, %e de %b de %Y as %H:%M',
+            day: '%A, %e de %b de %Y as %H:%M',
+            week: 'Week from %A, %e de %b de %Y',
+            month: '%B %Y',
+            year: '%Y'
         }
     }
 });
@@ -30,9 +30,9 @@ Highcharts.theme = {
     colors: ['#2667CF', '#DE3F0F', '#FF9A00', '#159500', '#98149C', '#0099C7', '#DE4978', '#68A900', '#B9332E', '#2B6396', '#98479B', '#1CA998', '#ACA900', '#6138CF', '#E87500'],
     chart: {
         backgroundColor: {
-            linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
+            linearGradient: {x1: 0, y1: 0, x2: 1, y2: 1},
             stops: [
-                [ 0, '#333333' ]
+                [0, '#333333']
             ]
         },
         style: {
@@ -221,3 +221,18 @@ Highcharts.theme = {
 
 // Apply the theme
 Highcharts.setOptions(Highcharts.theme);
+
+function pointFormatter_funcion() {
+    bytes = this.y;
+    sufixo = 'bp/s';
+    if (bytes > 1024) {
+        bytes = bytes / 1024;
+        sufixo = 'Kbp/s';
+    }
+    if (bytes > 1024) {
+        bytes = bytes / 1024;
+        sufixo = 'Mbp/s';
+    }
+    return '<span style="font-size: 10px">' + Highcharts.numberFormat(bytes, 2) + ' ' + sufixo + '</span><br/>';
+
+}

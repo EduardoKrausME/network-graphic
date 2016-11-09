@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>Gráfico de banda do servidor</title>
 
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lato:300">
     <link rel="stylesheet" href="assets/style.css">
@@ -28,7 +28,7 @@ $banda = new Banda();
 
 ?>
 
-<h1>Grafico de banda do servidor</h1>
+<h1>Gráfico de banda do servidor</h1>
 <div id="grafico_banda"></div>
 <script type="text/javascript">
 
@@ -38,11 +38,54 @@ $banda = new Banda();
     dataOut = [
         <?php echo implode ( ",\n", $banda->getGraficoDataOut() ) ?>
     ];
+    bandaAnteriorIn  = -1;
+    bandaAnteriorOut = -1;
 
     $(function () {
         chart = new Highcharts.Chart({
             chart: {
-                renderTo: 'grafico_banda'
+                renderTo: 'grafico_banda',
+                events : {
+                    load : function () {
+                        var series0 = this.series[0];
+                        var series1 = this.series[1];
+
+                        setInterval(function () {
+                            jQuery.ajax({
+                                url: 'ajax_atual_banda.php',
+                                data: {
+                                    bandaAnteriorIn  : bandaAnteriorIn,
+                                    bandaAnteriorOut : bandaAnteriorOut
+                                },
+                                type: "POST",
+                                success: function (retornos) {
+                                    retorno = retornos.split(':');
+
+                                    if( bandaAnteriorIn == -1 ) {
+                                        bandaAnteriorIn  = Math.floor(retorno[0]);
+                                        bandaAnteriorOut = Math.floor(retorno[1]);
+                                        return;
+                                    }
+
+                                    actualIn  = Math.floor(retorno[0]) - bandaAnteriorIn;
+                                    actualOut = Math.floor(retorno[1]) - bandaAnteriorOut;
+
+                                    datas = retorno[2].split('-');
+                                    d = Date.UTC( datas[0], datas[1] - 1, datas[2], datas[3], datas[4], datas[5] );
+
+                                    dataLoaded0 = [ d, actualIn  / 60 ];
+                                    dataLoaded1 = [ d, actualOut / 60 ];
+
+                                    series0.addPoint( dataLoaded0, true, true, true );
+                                    series1.addPoint( dataLoaded1, true, true, true );
+
+                                    bandaAnteriorIn = Math.floor(retorno[0]);
+                                    bandaAnteriorOut = Math.floor(retorno[1]);
+                                }
+                            });
+                        }, 60000);
+                    }
+                }
             },
             title: {
                 enable: false,

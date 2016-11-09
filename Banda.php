@@ -7,7 +7,6 @@
  */
 class Banda
 {
-
     private $bandaAnteriorIn  = -1;
     private $bandaAnteriorOut = -1;
     private $graficoDataIn    = array();
@@ -30,8 +29,6 @@ class Banda
 
     function __construct ()
     {
-
-
         // 1440 é um dia (24 horas vezes 60 minutos)
         for ( $i = 1440; $i > 1; $i-- ) {
             $nextMinute = time () - ( 60 * $i );
@@ -61,13 +58,7 @@ class Banda
             return 0;
 
         $fileData = file_get_contents ( $file );
-        preg_match_all ( "/\s*([a-z0-9]+):\s*([0-9]+)\s*([0-9]+)\s*([0-9]+)\s*([0-9]+)\s*([0-9]+)\s*([0-9]+)\s*([0-9]+)\s*([0-9]+)\s*([0-9]+)/", $fileData, $outputNet );
-
-        $somaRedeStartIn = $somaRedeStartOut = 0;
-        foreach ( $outputNet[ 2 ] as $rede )
-            $somaRedeStartIn += $rede;
-        foreach ( $outputNet[ 10 ] as $rede )
-            $somaRedeStartOut += $rede;
+        list( $somaRedeStartIn, $somaRedeStartOut ) = self::processBanda ( $fileData );
 
         if ( $this->bandaAnteriorIn == -1 ) {
             $this->bandaAnteriorIn  = $somaRedeStartIn;
@@ -87,6 +78,23 @@ class Banda
             'in'  => $retornoIn / 60,
             'out' => $retornoOut / 60
         );
+    }
+
+    /**
+     * @param String $fileData
+     * @return array
+     */
+    public static function processBanda( $fileData){
+        preg_match_all ( "/(\w+):\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)/",
+            $fileData, $outputNet );
+
+        $somaRedeStartIn = $somaRedeStartOut = 0;
+        foreach ( $outputNet[ 2 ] as $rede )
+            $somaRedeStartIn += $rede;
+        foreach ( $outputNet[ 10 ] as $rede )
+            $somaRedeStartOut += $rede;
+
+        return array( $somaRedeStartIn, $somaRedeStartOut );
     }
 
 }

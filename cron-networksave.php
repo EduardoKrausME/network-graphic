@@ -9,7 +9,7 @@
 /*************************
 
   A CRON deve ser:
-  * * * * * /usr/bin/php  /var/www/html_homologacao/network/networksaved/cron-networksave.php > /dev/null 2>&1
+  * * * * * /usr/bin/php  [path-to-project]/cron-networksave.php > /dev/null 2>&1
 
  *************************/
 

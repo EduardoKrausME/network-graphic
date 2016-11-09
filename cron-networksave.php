@@ -8,8 +8,8 @@
 
 /*************************
 
-  A CRON deve ser:
-  * * * * * /usr/bin/php  [path-to-project]/cron-networksave.php > /dev/null 2>&1
+   A CRON deve ser:
+   * * * * * /usr/bin/php  [path-to-project]/cron-networksave.php > /dev/null 2>&1
 
  *************************/
 
